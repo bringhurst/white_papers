@@ -1,4 +1,6 @@
 Space filling curves as interconnection topology
+By Jon Bringhurst
+March 3rd, 2011
 
 I haven't been able to find much information on how space filling curves, like
 Hilbert curves, are used in network interconnection topology in supercomputers.
