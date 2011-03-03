@@ -1,0 +1,139 @@
+Space filling curves as interconnection topology
+
+I haven't been able to find much information on how space filling curves, like
+Hilbert curves, are used in network interconnection topology in supercomputers.
+So, this paper is my attempt at putting the information in one place. We'll
+start off with an introduction to gray encoding and how it relates to Hilbert
+curves.
+
+So, gray codes are the concept of the day here. Gray codes are just another
+binary representation of integer counting (1, 2, 3, 4, 5, …). They were used
+back in the day for mechanical counting because of a key property -- only one
+bit changes for every value that a gray code is incremented or decremented.
+This made it simple for a sensor to tell when the value had changed because
+only one bit would be flipped every time. This is in contrast to normal binary
+counting where it's common for multiple bits to be flipped for every time the
+value is incremented or decremented which makes it difficult to tell if the
+bits have all completely flipped into their final state.
+
+Gray codes also have another special property. Some people like to call gray
+codes "reflected binary codes". This property makes the generation of gray
+codes feel very similar to the generation of a fractal. For example, start off
+with the one bit gray codes -- you have 0 and 1. Now, to get two bit gray
+codes, you write it forwards and backwards (0, 1, 1, 0). Then, prepend 0s to
+the first half of the numbers and 1s to the second half of the numbers (00, 01,
+11, 10) and you end up with the two bit gray codes. To get the n-bit gray
+codes, you repeat the process n times from the base case.
+
+Now the cool stuff. Gray codes have yet another story to tell. You can use gray
+codes to reference a coordinate in a space filling curve known as a
+"Hilbert Curve". Ignore the word "curve" for now -- it's just going to confuse
+you. If you're like most people, you're going to think of a curve as a smooth
+turn on a roller coaster or the shape of a hot air balloon. You'll think of
+Hilbert curves like that eventually, but not now. Right now, you can safely
+think of Hilbert curves in appearance as looking similar to the maze puzzles
+on a paper placemat from a roadside greasy spoon that you solved with a wax
+crayon as a child.
+
+So, how do you use gray codes to reference locations in Hilbert curves? Lets
+start off with the two bit gray codes. Just use each value like an x-y
+coordinate. So, we have the coordinates of (0, 0), (0, 1), (1, 1), (1, 0) as
+our first order Hilbert curve.
+
+
+                     (0, 1)  *---------*  (1, 1)
+                             |         |
+                             |         |
+                             |         |
+                             |         |
+                     (0, 0)  *         *  (1, 0)
+
+Now, lets try to do the second order Hilbert curve using the four bit gray
+codes. To do this, we need to utilize the fractal properties of the Hilbert
+curve. Each coordinate in the first order Hilbert curve needs to be replaced
+by a new sub-curve that is the same shape as the first order curve. This new
+sub-curve will be translated and rotated to fit in with the design of the
+first order Hilbert curve. Once each of the coordinates has been replaced, we
+end up with a second order Hilbert curve.
+
+                      *-------*       *-------*
+                      |       |       |       |
+                      |       |       |       |
+                      |       |       |       |
+                      *       *-------*       *
+                      |                       |
+                      |                       |
+                      |                       |
+                      *-------*       *-------*
+                              |       |
+                              |       | 
+                              |       |
+                      *-------*       *-------*
+
+To address each of the coordinates in the second order Hilbert curve with gray
+codes, we need to reference the original location of the coordinate that was
+replaced by the sub-curve. So, for example, the lower-right corner in the
+second order Hilbert curve has a gray code with bits that start with "10...".
+We can then get the rest of the gray code by again picturing the single order
+Hilbert curve and rotating the visualization and then referencing that same
+point after rotations in the lower order. So, the remaining part of the code is
+"00" -- which makes the code for the lower-right corner "1000". Using the same
+concept, you can use a gray code to find the location in a Hilbert curve.
+
+Now, how does the conversion from gray codes to Hilbert graphs and back
+actually help us when it comes to network topology? Lets look at a third order
+Hilbert curve for some perspective.
+
+                    *---*   *---*   *---*   *---*
+                    |   |   |   |   |   |   |   |
+                    *   *---*   *   *   *---*   *
+                    |           |   |           |
+                    *---*   *---*   *---*   *---*
+                        |   |           |   |
+                    *---*   *---*---*---*   *---*
+                    |                           |
+                    *   *---*---*   *---*---*   *
+                    |   |       |   |       |   |
+                    *---*   *---*   *---*   *---*
+                       (3)  |  (7)      |
+                (2) *---*   *---*   *---*   *---*
+                    |   |       |   |       |   |
+                (1) *   *---*---*   *---*---*   *
+                       (4) (5) (6)
+
+Start from the lower left corner of the curve and start ordering each
+coordinate as you go along. As you pass each coordinate, calculate a rough
+estimate of the physical difference in distance between each coordinate.
+You'll find that as you go, coordinates that are close to each other tend to
+also be close to each other in their ordering. The number of each coordinate as
+you go along and give each a value is known as the "Hilbert integer".
+
+Now that we have a bit of a base, we can try to relate this to interconnection
+topology. First things first, we need to have a picture of a 3 dimensional
+Hilbert curve. So, instead of filling up a 2 dimensional space through each
+order of the curve, we fill up a 3 dimensional space by adding a rotation into
+the third dimension to each translate and rotation in 2 dimensional space.
+
+                                 *
+                           *     |
+                           |\    |
+                           | \   |
+                           |  *  |  *
+                           |  |  |  |
+                           *-----*  |
+                              |     |
+                              |     |
+                              *-----*
+
+Now that we have a topology that closely resembles the node structure in a 3D
+torus network structure, we can start thinking about how nodes are allocated.
+
+Remember the concept of a Hilbert integer? That's going to be the node ID of
+every node in the supercomputer. When the Hilbert integers of each node are
+generated, they're stored by the central resource manager and stored for the
+duration of the resource manager's lifecycle. After being sorted into a one
+dimensional array, the node IDs can then be effectively used by a scheduler to
+provide resources to jobs at a level of abstraction where the scheduler doesn't
+need to worry about the actual node topology.
+
+EOF

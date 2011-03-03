@@ -1,0 +1,57 @@
+How to Compile Stuff
+By Jon Bringhurst
+August 21st 2002
+
+First off, lets go into what it means to compile a program. When you get one or more files that contain source code and somehow change them into something the computer can run, you have compiled it. Source code is what is created when programmers program things, it contains so called "human readable" text that tells the computer what to do. Of course, if you are not a programmer yourself, what's inside the files will probably look like gibberish. For the most part however, you won't have to edit what's in the files to compile them. So you just have to turn those files into something you can run without editing what's inside them. That's what this document is all about.
+
+With most unix applications, there is a file called a "make" file that simplifies compiling from the your point of view. This file tells the computer in what order and how each of the source code files can be changed into object files. An "object file" is what a source file is changed into halfway through the compile process. The object files are then combined to create the program. The make file also tells the computer how these object files should be put together to create a program.
+
+There is another file, called a "configure" file that creates a make file. When you run it, this file asks your operating system a few questions about how it runs. The configure file then takes the information that your operating system gives it to create a make file.
+
+So, to compile a program, you need to run the configure file to get a make file. Then you need to run the make file to create the program.
+
+Now that we have the basics down, here's an example of how to compile a program that uses the method above. I have chosen a program called "wget" for this. wget is a little program that simply takes a url and downloads it to your hard drive. The most recent version of wget can be found at ftp://ftp.gnu.org/pub/gnu/wget/. I have chosen wget-1.8.2, which was the latest version when I wrote this. You can download it to your hard drive through a web browser or an ftp client perhaps.
+
+For the examples below, "$" is your shell prompt. Your shell prompt may look longer and have some other things in it (like your username and the current directory). You can replace the version number of wget in the examples below, your results may vary if you do however. Good luck, and don't be afraid to try new things if something doesn't work. Also, make sure you read the "README" and "INSTALL" files, they can help you out quite a bit once you have the basics down.
+
+Once you have the file in your current directory you can decompress it with the following command:
+
+$ tar -zxf wget-1.8.2.tar.gz
+
+You should now have a folder named 'wget-1.8.2'. Get in there and lets start.
+
+$ cd wget-1.8.2
+
+Now you can run a program called "make", which reads through the make file and creates a program out of all the source code.
+
+$ make
+
+Well, maybe not. Perhaps you have an error on your screen?
+
+make: *** No targets specified and no makefile found. Stop.
+
+Make is complaining that it can't find a make file. So lets make one with configure. "sh" is the program that reads the configure file. It takes all the instructions in the configure file and follows them to create a make file. It's sort of like making the computer read a recipe to bake a cake. Except in this case, the cake is the make file.
+
+$ sh configure
+
+You should now see a bunch of stuff fly up the screen. Most of what it says will be checking for whatever. Some of these things will say yes, some will say no. As long as it gets to the part about creating the make file, you're fine. Just because it says "no" or "not found", doesn't always mean something is wrong. It's just that it's checking how your operating system is set up.
+
+After the make file is created, you can go ahead and run the make program again.
+
+$ make
+
+This time, if everything went well, stuff will begin to fly up your screen detailing how it converts the source code to a program. After everything is done and you get your prompt back, you should see something that looks like the following
+
+make[1]: Nothing to be done for `all'.
+
+What is this "all" thing? all is the set of instructions that you just ran. Each make file can contain more than one set of instructions. When you just type "make" on the command line, it will automatically assume that you meant "make all". When you add a word after the make command, make looks at it and tries to find the set of instructions you want to run in the make file. For example, most make files include the instructions for installing a program. This set of instructions is called (you guessed it) "install". So, when you run "make install" it runs the instructions to put the compiled program in it's proper place. However, these "install" instructions require the privledge of the root account. You need to have root privlege. To get root privlege, you can run make with the "sudo" command on the front of it so your command looks like "sudo make install". So go ahead, try it.
+
+$ sudo make install
+
+It will then ask you for your password, then it will go ahead and install the compiled program and all of it's documentation and support files.
+
+Congratulations, you just compiled and installed an application from source.
+
+Unfortunately, not all unix programs are as easy to compile and install as this one. On the bright side, you know the basics now and can intelligently converse with someone to fix any complex problems you may encounter. Good luck, now don't be afraid to go ahead and compile stuff with options to the configure script and other modifications. You're now one step closer to knowing as much as that d*mn unix geek down the hall :)
+
+EOF
